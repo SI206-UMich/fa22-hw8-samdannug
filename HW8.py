@@ -64,6 +64,22 @@ def barchart_restaurant_categories(db_filename):
 
         d[curr_category] = curr_count
 
+
+    sorted_d = dict(sorted(d.items(), key=lambda x:x[1]))
+    # print(sorted_d.keys())
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.barh(list(sorted_d.keys()), list(sorted_d.values()))
+
+    ax.set_xlabel('Number of Restaurants')
+    ax.set_ylabel('Restaurants Categories')
+    ax.set_title('Types of Restaurants on South University Ave')
+    plt.tight_layout()
+
+    fig.savefig('test.png')
+    plt.show()
+
     # print(d)
     return d
 
