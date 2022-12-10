@@ -42,8 +42,6 @@ def get_restaurant_data(db_filename):
     # print(l)
     return l
 
-
-
 def barchart_restaurant_categories(db_filename):
     """
     This function accepts a file name of a database as a parameter and returns a dictionary. The keys should be the
@@ -53,15 +51,21 @@ def barchart_restaurant_categories(db_filename):
     conn = sqlite3.connect(db_filename)
     cur = conn.cursor()
     d = {}
-    cur.execute('select * from categories')
+    cur.execute('select * from categories order by category')
     categories = cur.fetchall()
-    print(categories)
+    # print(categories)
 
-    # for category in cur.execute
+    for category in categories:
+        curr_id = category[0]
+        curr_category = category[1]
 
-    # cur.execute('select count(category_id) from restaurants')
-    # x = cur.fetchall()
-    # print(x)
+        cur.execute('select count(category_id) from restaurants where category_id = ?', (curr_id,))
+        curr_count = cur.fetchone()[0]
+
+        d[curr_category] = curr_count
+
+    # print(d)
+    return d
 
 #EXTRA CREDIT
 def highest_rated_category(db_filename):#Do this through DB as well
@@ -110,13 +114,13 @@ class TestHW8(unittest.TestCase):
         self.assertIsInstance(rest_data, list)
         self.assertEqual(rest_data[0], self.rest_dict)
         self.assertEqual(len(rest_data), 25)
-    '''
+    
     def test_barchart_restaurant_categories(self):
         cat_data = barchart_restaurant_categories('South_U_Restaurants.db')
         self.assertIsInstance(cat_data, dict)
         self.assertEqual(cat_data, self.cat_dict)
         self.assertEqual(len(cat_data), 14)
-
+    '''
     def test_highest_rated_category(self):
         best_category = highest_rated_category('South_U_Restaurants.db')
         self.assertIsInstance(best_category, tuple)
