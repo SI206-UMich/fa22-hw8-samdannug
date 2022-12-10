@@ -9,7 +9,40 @@ def get_restaurant_data(db_filename):
     dictionaries. The key:value pairs should be the name, category, building, and rating
     of each restaurant in the database.
     """
-    pass
+    # path = os.path.dirname(os.path.abspath(__file__))
+    conn = sqlite3.connect(db_filename)
+    cur = conn.cursor()
+    l = []
+    cur.execute('select * from restaurants')
+
+    for row in cur.fetchall():
+        # print(row)
+        d = {}
+
+        name = row[1]
+
+        category_id = row[2]
+        cur.execute('select categories.category from categories join restaurants on categories.id = restaurants.category_id where categories.id = ?', (category_id,))
+        category = cur.fetchone()[0]
+
+        building_id = row[3]
+        cur.execute('select buildings.building from buildings join restaurants on buildings.id = restaurants.building_id where buildings.id = ?', (building_id,))
+        building = cur.fetchone()[0]
+
+        rating = row[4]
+
+        d['name'] = name
+        d['category'] = category
+        d['building'] = building
+        d['rating'] = rating
+
+        l.append(d)
+
+    conn.close()
+    # print(l)
+    return l
+
+
 
 def barchart_restaurant_categories(db_filename):
     """
@@ -17,7 +50,18 @@ def barchart_restaurant_categories(db_filename):
     restaurant categories and the values should be the number of restaurants in each category. The function should
     also create a bar chart with restaurant categories and the counts of each category.
     """
-    pass
+    conn = sqlite3.connect(db_filename)
+    cur = conn.cursor()
+    d = {}
+    cur.execute('select * from categories')
+    categories = cur.fetchall()
+    print(categories)
+
+    # for category in cur.execute
+
+    # cur.execute('select count(category_id) from restaurants')
+    # x = cur.fetchall()
+    # print(x)
 
 #EXTRA CREDIT
 def highest_rated_category(db_filename):#Do this through DB as well
@@ -31,9 +75,11 @@ def highest_rated_category(db_filename):#Do this through DB as well
 
 #Try calling your functions here
 def main():
-    pass
+    get_restaurant_data('South_U_Restaurants.db')
+    barchart_restaurant_categories('South_U_Restaurants.db')
 
 class TestHW8(unittest.TestCase):
+
     def setUp(self):
         self.rest_dict = {
             'name': 'M-36 Coffee Roasters Cafe',
@@ -64,7 +110,7 @@ class TestHW8(unittest.TestCase):
         self.assertIsInstance(rest_data, list)
         self.assertEqual(rest_data[0], self.rest_dict)
         self.assertEqual(len(rest_data), 25)
-
+    '''
     def test_barchart_restaurant_categories(self):
         cat_data = barchart_restaurant_categories('South_U_Restaurants.db')
         self.assertIsInstance(cat_data, dict)
@@ -75,7 +121,7 @@ class TestHW8(unittest.TestCase):
         best_category = highest_rated_category('South_U_Restaurants.db')
         self.assertIsInstance(best_category, tuple)
         self.assertEqual(best_category, self.best_category)
-
+    '''
 if __name__ == '__main__':
     main()
     unittest.main(verbosity=2)
